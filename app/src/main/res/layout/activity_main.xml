@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        android:scrollbars="vertical"
+        android:gravity="center"
+        tools:context=".MainActivity">
+
+        <TextClock
+            android:id="@+id/c"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:paddingHorizontal="5dp"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="30dp"
+            android:background="#ff4a5a"
+            android:gravity="end"
+            android:textColor="#FFFFFF" />
+
+
+        <ImageView
+            android:id="@+id/textClock"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="25dp"
+            android:src="@drawable/firstpageimage"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome to Tap2Eat"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/black"
+            android:textStyle="bold|italic"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="\nTap2Eat"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:textStyle="bold|italic"
+            android:textColor="#e13947"
+            />
+
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login Or Sign-Up"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/black"
+            android:textStyle="bold|italic"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+
+            android:orientation="horizontal">
+
+
+
+            <EditText
+                android:layout_width="49dp"
+                android:layout_height="48dp"
+                android:textColor="@color/black"
+                android:layout_marginEnd="10dp"
+                android:inputType="number"
+                android:text="+91" />
+
+            <EditText
+                android:id="@+id/etMobile"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Enter Phone Number"
+                android:textColor="@color/black"
+                android:textColorHint="#808080"
+                android:layout_marginStart="10dp"
+                android:inputType="number"
+                android:text=""
+                />
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cont"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="#f04c5c"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="15dp"
+            app:cornerRadius="15dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:text="Continue"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="------------------------ or ------------------------"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/black"
+            android:textStyle="bold|italic"
+            />
+
+        <ImageView
+            android:id="@+id/border"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/googlelogo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="By continuning, you agree to our\nTerms of Service \t Privacy Policy  \t Content Policy"
+            android:gravity="center"
+            android:layout_marginHorizontal="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+
+
+
+    </LinearLayout>
+</ScrollView>
