@@ -142,12 +142,12 @@ class FoodPage : AppCompatActivity() {
 
     private fun hasLocationPermission() =
         ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
     private fun requestLocationPermission() {
         if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),0)
+            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
     }
 

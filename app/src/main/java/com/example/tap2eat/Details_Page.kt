@@ -20,7 +20,7 @@ class Details_Page : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
 
     private lateinit var profileImage: ImageView
-    private var profileImageUrl: String? = null
+    private var profileImageUrl: String? = "R.drawable.ic_profile_pic"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,6 +32,7 @@ class Details_Page : AppCompatActivity() {
         }
 
         val mobile=intent.getStringExtra("EXTRA_MOBILE_NUMBER")
+        val person = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
         val etName=findViewById<EditText>(R.id.etName)
         profileImage=findViewById<ImageView>(R.id.profileImage)
         val etemail=findViewById<EditText>(R.id.etemail)
@@ -45,6 +46,15 @@ class Details_Page : AppCompatActivity() {
         }
 
         etMobileDetails.setText(mobile)
+        if(person!=null)
+        {
+
+            etName.setText(person!!.name)
+            etemail.setText(person!!.email)
+            if (!(person.photo.isNullOrEmpty()))
+                profileImage.setImageURI(Uri.fromFile(File(person.photo)))
+        }
+
         val btn=findViewById<com.google.android.material.button.MaterialButton>(R.id.cont2)
 
         etMobileDetails.setOnClickListener()
@@ -56,6 +66,7 @@ class Details_Page : AppCompatActivity() {
             val etName=etName.text.toString()
             val etemail=etemail.text.toString()
             val etpassword=etpassword.text.toString()
+
 
             if (etName.isEmpty()) {
                 Toast.makeText(this, "Please enter Name", Toast.LENGTH_SHORT).show()
