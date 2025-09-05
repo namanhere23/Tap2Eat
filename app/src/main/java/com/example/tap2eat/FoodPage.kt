@@ -3,6 +3,7 @@ package com.example.tap2eat
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
@@ -11,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,7 +28,7 @@ import java.io.IOException
 
 class FoodPage : AppCompatActivity() {
     lateinit var fusedLocationClient: FusedLocationProviderClient
-    @SuppressLint("MissingInflatedId", "MissingPermission")
+    @SuppressLint("MissingInflatedId", "MissingPermission", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,6 +51,15 @@ class FoodPage : AppCompatActivity() {
             CartItems("Veg Biryani", 150, 0, R.drawable.vbiryani),
             CartItems("Coffee", 25, 0, R.drawable.coffee)
         )
+
+        val searchView = findViewById<SearchView>(R.id.searchView)
+        val searchAutoComplete =
+            searchView.findViewById<androidx.appcompat.widget.SearchView.SearchAutoComplete>(
+                androidx.appcompat.R.id.search_src_text
+            )
+
+        searchAutoComplete.setTextColor(Color.BLACK)       // text color
+        searchAutoComplete.setHintTextColor(Color.GRAY)   // hint color
 
         val cartFragment = CartFragment().apply {
             arguments = Bundle().apply {
@@ -175,6 +186,8 @@ class FoodPage : AppCompatActivity() {
             }
 
         }
+
+
 
     }
 

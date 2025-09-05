@@ -7,39 +7,52 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.bumptech.glide.Glide
-import com.example.tap2eat.databinding.ActivityPaymentBinding
+import androidx.lifecycle.lifecycleScope
+import com.example.tap2eat.API.ApiUtilites
+import com.example.tap2eat.Utils.PUBLISHIBLE_KEY
+import com.google.android.material.button.MaterialButton
+import com.stripe.android.PaymentConfiguration
+import com.stripe.android.paymentsheet.PaymentSheet
+import com.stripe.android.paymentsheet.PaymentSheetResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class Payment : AppCompatActivity() {
 
-    val CHANNEL_ID="Channel"
-    val CHANNEL_NAME="ChannelName"
-    @SuppressLint("MissingPermission")
+    private lateinit var paymentSheet: PaymentSheet
+    private lateinit var customerId: String
+    private lateinit var ephemeralKey: String
+    private lateinit var clientSecret: String
+
+    var amount: Int = 0
+
+    val CHANNEL_ID = "Channel"
+    val CHANNEL_NAME = "ChannelName"
+    private val apiInterface = ApiUtilites.getApiInterface()
+
+    @SuppressLint("MissingPermission", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_payment)
-        createNotifiactionChannel()
 
+        createNotificationChannel()
+        amount = intent.getIntExtra("EXTRA_TOTAL_AMOUNT", 0)
         val intents= Intent(this,Payment::class.java)
         val pendingIntent= TaskStackBuilder.create(this).run {
             addNextIntentWithParentStack(intents)
             getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
-
-        val amount = intent.getIntExtra("EXTRA_TOTAL_AMOUNT", 0)
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Pay $amount")
@@ -49,35 +62,105 @@ class Payment : AppCompatActivity() {
             .setContentIntent(pendingIntent)
             .build()
 
+
         val notificationManager= NotificationManagerCompat.from(this)
         notificationManager.notify(0,notification)
 
+        PaymentConfiguration.init(this, PUBLISHIBLE_KEY)
+        paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
 
-        if (amount!=0) {
-            val qrUrl = "https://quickchart.io/qr?text=upi%3A%2F%2Fpay%3Fpa%3Dnamanhere23%40oksbi%26pn%3DNaman%2520Gulati%26am%3D${amount}.00%26cu%3DINR%26aid%3DuGICAgKCi3anvHw&size=200"
-            val qr=findViewById<ImageView>(R.id.qrImage)
-            Glide.with(this)
-                .load(qrUrl)
-                .into(qr)
-            qr.setOnClickListener {
-                initiateUPIPayment(amount)
+        val button = findViewById<MaterialButton>(R.id.contPayment)
+        button.setOnClickListener {
+            getCustomerId()
+        }
+
+        val person = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
+        val panel = Profile().apply {
+            arguments = Bundle().apply {
+                putSerializable("EXTRA_USER_DETAILS", person)
             }
         }
 
-        val person=intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
-
-        val panel=Profile().apply { arguments= Bundle().apply {
-            putSerializable("EXTRA_USER_DETAILS", person)
-        }
-        }
-
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.topPanel,panel)
+            replace(R.id.topPanel, panel)
             commit()
         }
     }
 
-    fun createNotifiactionChannel(){
+    private fun getCustomerId() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val res = apiInterface.getCustomer()
+            withContext(Dispatchers.Main) {
+                if (res.isSuccessful && res.body() != null) {
+                    customerId = res.body()!!.id
+                    getEphemeralKey(customerId)
+                } else {
+                    Toast.makeText(this@Payment, "Failed to get customer", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun getEphemeralKey(customerId: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val res = apiInterface.getEphemeralKey(customerId)
+            withContext(Dispatchers.Main) {
+                if (res.isSuccessful && res.body() != null) {
+                    ephemeralKey = res.body()!!.secret
+                    getPaymentIntent(customerId)
+                } else {
+                    Toast.makeText(this@Payment, "Failed to get ephemeral key", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun getPaymentIntent(customerId: String) {
+        val amountInPaise = (amount * 100).toString()
+        lifecycleScope.launch(Dispatchers.IO) {
+            val res = apiInterface.getPaymentIntent(customerId, amountInPaise)
+            withContext(Dispatchers.Main) {
+                if (res.isSuccessful && res.body() != null) {
+                    clientSecret = res.body()!!.client_secret
+                    Toast.makeText(this@Payment, "Proceed For Payment", Toast.LENGTH_SHORT).show()
+                    paymentFlow()
+                } else {
+                    val errorMsg = res.errorBody()?.string()
+                    Toast.makeText(this@Payment, "Failed to create payment intent: $errorMsg", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun paymentFlow() {
+        paymentSheet.presentWithPaymentIntent(
+            clientSecret,
+            PaymentSheet.Configuration(
+                "Tap2Eat",
+                PaymentSheet.CustomerConfiguration(
+                    customerId,
+                    ephemeralKey
+                )
+            )
+        )
+    }
+
+    private fun onPaymentSheetResult(paymentSheetResult: PaymentSheetResult) {
+        when (paymentSheetResult) {
+            is PaymentSheetResult.Completed -> {
+                Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show()
+            }
+            is PaymentSheetResult.Canceled -> {
+                Toast.makeText(this, "Payment Canceled", Toast.LENGTH_SHORT).show()
+            }
+            is PaymentSheetResult.Failed -> {
+                Toast.makeText(this, "Payment Failed: ${paymentSheetResult.error.message}", Toast.LENGTH_LONG).show()
+                Log.d("Payment Debug","Payment Failed: ${paymentSheetResult.error.message}")
+            }
+        }
+    }
+
+    fun createNotificationChannel(){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
             val channel=
                 NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH).apply {
@@ -87,17 +170,6 @@ class Payment : AppCompatActivity() {
 
             val manager=getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
-        }
-    }
-
-    private fun initiateUPIPayment(amount: Int) {
-        val upiUri = Uri.parse("upi://pay?pa=namanhere23@oksbi&pn=Naman%20Gulati&am=$amount.00&cu=INR&aid=uGICAgKCi3anvHw")
-        val upiIntent = Intent(Intent.ACTION_VIEW, upiUri)
-
-        try {
-            startActivity(Intent.createChooser(upiIntent, "Choose UPI App"))
-        } catch (e: Exception) {
-            Toast.makeText(this, "No UPI app found", Toast.LENGTH_SHORT).show()
         }
     }
 }

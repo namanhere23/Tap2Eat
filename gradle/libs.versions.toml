@@ -17,6 +17,7 @@ firebaseAuth = "24.0.1"
 playServicesFido = "20.0.1"
 playServicesMaps = "19.2.0"
 fragment = "1.5.4"
+carUiLib = "2.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,6 +40,7 @@ play-services-fido = { group = "com.google.android.gms", name = "play-services-f
 firebase-functions = { group = "com.google.firebase", name = "firebase-functions" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
+car-ui-lib = { group = "com.android.car.ui", name = "car-ui-lib", version.ref = "carUiLib" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

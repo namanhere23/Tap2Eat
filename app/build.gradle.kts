@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tap2eat"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -72,19 +72,19 @@ dependencies {
     implementation("com.google.firebase:firebase-functions")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.stripe:stripe-android:21.25.0")
+    implementation("com.stripe:stripe-java:24.9.0")
     implementation("com.stripe:financial-connections:21.25.0")
     implementation(libs.play.services.maps)
     implementation(libs.androidx.fragment)
+    implementation(libs.car.ui.lib)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
-
-
-
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 
 
 }

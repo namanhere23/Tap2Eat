@@ -58,8 +58,6 @@ class Details_Page : AppCompatActivity() {
         val back=findViewById<ImageView>(R.id.back)
 
 
-
-
         person?.email?.let { email ->
             loadUserByEmail(email) { user ->
                 if (user != null) {
@@ -200,14 +198,15 @@ class Details_Page : AppCompatActivity() {
         }
     }
 
+
     private fun hasLocationPermission() =
         ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
     private fun requestLocationPermission() {
         if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),0)
+            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
     }
 
