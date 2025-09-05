@@ -10,7 +10,10 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +27,7 @@ import com.stripe.android.PaymentConfiguration
 import com.stripe.android.paymentsheet.PaymentSheet
 import com.stripe.android.paymentsheet.PaymentSheetResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -33,6 +37,7 @@ class Payment : AppCompatActivity() {
     private lateinit var customerId: String
     private lateinit var ephemeralKey: String
     private lateinit var clientSecret: String
+    lateinit var person:UserDetails
 
     var amount: Int = 0
 
@@ -74,7 +79,7 @@ class Payment : AppCompatActivity() {
             getCustomerId()
         }
 
-        val person = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
+        person = (intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails)!!
         val panel = Profile().apply {
             arguments = Bundle().apply {
                 putSerializable("EXTRA_USER_DETAILS", person)
@@ -149,6 +154,28 @@ class Payment : AppCompatActivity() {
         when (paymentSheetResult) {
             is PaymentSheetResult.Completed -> {
                 Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show()
+                val successImage = findViewById<ImageView>(R.id.paymentSuccessImage)
+                successImage.visibility = View.VISIBLE
+                val textView1=findViewById<TextView>(R.id.textView)
+                textView1.visibility=View.GONE
+                val textView2=findViewById<TextView>(R.id.textView2)
+                textView2.visibility=View.GONE
+                val button=findViewById<Button>(R.id.contPayment)
+                button.visibility=View.GONE
+
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+                val person = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
+
+                lifecycleScope.launch {
+                    delay(3000)
+                    val intent = Intent(this@Payment, FoodPage::class.java)
+                    intent.putExtra("EXTRA_USER_DETAILS", person)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+
+
             }
             is PaymentSheetResult.Canceled -> {
                 Toast.makeText(this, "Payment Canceled", Toast.LENGTH_SHORT).show()

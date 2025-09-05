@@ -3,6 +3,7 @@ package com.example.tap2eat
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -26,11 +27,14 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -95,18 +99,43 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
-                }
+                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()}
         }
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
-            startActivity(Intent(this, FoodPage::class.java).apply {
-                putExtra("EXTRA_USER_DETAILS", userDetails)
-            })
-            finish()
-            return
+            var emaill= currentUser.email
+            emaill?.let { emaill ->
+                loadUserByEmail(emaill) { user ->
+                    if (user != null) {
+                        if (user.name.toString().isNullOrEmpty()) {
+                            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
+                            Intent(this, Details_Page::class.java).apply {
+                                putExtra("EXTRA_USER_DETAILS", userDetails)
+                                startActivity(this)
+                            }
+                        } else {
+                            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
+                            Intent(this, FoodPage::class.java).apply {
+                                putExtra("EXTRA_USER_DETAILS", userDetails)
+                                startActivity(this)
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        val userDetails = UserDetails("", currentUser.email ?: "", "", "")
+                        Intent(this, Details_Page::class.java).apply {
+                            putExtra("EXTRA_USER_DETAILS", userDetails)
+                            startActivity(this)
+                        }
+                    }
+                }
+            }
+
+
+
         }
 
 
@@ -183,14 +212,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun signInUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Signed in successfully!", Toast.LENGTH_SHORT).show()
-                goToDetails(email)
+            .addOnSuccessListener { result ->
+                val user = result.user
+                if (user != null) {
+                    if (user.isEmailVerified) {
+                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Please verify your email before logging in.", Toast.LENGTH_LONG).show()
+                        auth.signOut()
+                    }
+                }
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Login failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     private fun createNewUser(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
@@ -240,12 +279,37 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
                     Toast.makeText(this, "Google sign-in successful!", Toast.LENGTH_SHORT).show()
-                  
-                    val userDetails = UserDetails("", user?.email ?: "", "", "")
-                    startActivity(Intent(this, Details_Page::class.java).apply {
-                        putExtra("EXTRA_USER_DETAILS", userDetails)
-                    })
-                    finish()
+
+                    var emaill= user?.email
+                    emaill?.let { emaill ->
+                        loadUserByEmail(emaill) { user ->
+                            if (user != null) {
+                                if (user.name.toString().isNullOrEmpty()) {
+                                    val userDetails = UserDetails("", emaill, "", "")
+                                    Intent(this, Details_Page::class.java).apply {
+                                        putExtra("EXTRA_USER_DETAILS", userDetails)
+                                        startActivity(this)
+                                    }
+                                } else {
+                                    val userDetails = UserDetails("", emaill , "", "")
+                                    Intent(this, FoodPage::class.java).apply {
+                                        putExtra("EXTRA_USER_DETAILS", userDetails)
+                                        startActivity(this)
+                                    }
+                                }
+                            }
+
+                            else
+                            {
+                                val userDetails = UserDetails("", emaill , "", "")
+                                Intent(this, Details_Page::class.java).apply {
+                                    putExtra("EXTRA_USER_DETAILS", userDetails)
+                                    startActivity(this)
+                                }
+                            }
+                        }
+                    }
+
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     Toast.makeText(
@@ -282,5 +346,26 @@ class MainActivity : AppCompatActivity() {
         if (!hasLocationPermission()) {
             ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
+    }
+
+    private fun loadUserByEmail(email: String, onResult: (UserDetails?) -> Unit) {
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
+
+        val database = FirebaseDatabase.getInstance()
+        val usersRef = database.getReference("users")
+
+        val userId = email.replace(".", "_")
+        usersRef.child(userId).get()
+            .addOnSuccessListener { snap ->
+                val user = snap.getValue(UserDetails::class.java)
+                onResult(user)
+            }
+            .addOnFailureListener { e ->
+                Log.e("Profile", "Failed to read user", e)
+                Toast.makeText(this, "Read failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                onResult(null)
+            }
     }
 }

@@ -64,7 +64,6 @@
         android:backgroundTint="#f04c5c"
         android:layout_marginHorizontal="45dp"
         android:layout_marginTop="15dp"
-
         app:cornerRadius="15dp"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -73,10 +72,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         android:text="Complete Payment"
         />
+
+    <ImageView
+        android:id="@+id/paymentSuccessImage"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:src="@drawable/paymentsuccess"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
