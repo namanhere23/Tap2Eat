@@ -7,7 +7,8 @@ import com.example.tap2eat.CartItems
 import com.example.tap2eat.databinding.CartItemBinding
 import java.util.ArrayList
 
-class CartAdapter(private val cartItems: ArrayList<CartItems>, private val onTotalChanged: (Int) -> Unit): RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
+class CartAdapter(private val cartItems: ArrayList<CartItems>, private val onTotalChanged: (Int) -> Unit):
+    RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
     private val itemQuantities=IntArray(cartItems.size){1}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
@@ -23,9 +24,6 @@ class CartAdapter(private val cartItems: ArrayList<CartItems>, private val onTot
 
         inner class CartViewHolder(private val binding: CartItemBinding):RecyclerView.ViewHolder(binding.root) {
             fun bind(item: CartItems) {
-
-
-
                 binding.apply {
                     CartQuantity.text = item.quantity.toString()
                     cartItem.text = item.item
@@ -47,9 +45,6 @@ class CartAdapter(private val cartItems: ArrayList<CartItems>, private val onTot
                     }
                 }
             }
-
-
-
         }
 
     private fun getTotal(): Int {

@@ -1,6 +1,7 @@
 package com.example.tap2eat
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -13,12 +14,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.tap2eat.BuildConfig.API_KEY_LOCATION
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
+import kotlinx.coroutines.*
+import java.io.IOException
+
 
 class FoodPage : AppCompatActivity() {
     lateinit var fusedLocationClient: FusedLocationProviderClient
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -61,30 +69,62 @@ class FoodPage : AppCompatActivity() {
         val locationPerson = findViewById<TextView>(R.id.location)
 
 
-        if(hasLocationPermission()) {
 
-            try {
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val latitude = location.latitude.toString()
-                        val longitude = location.longitude
-                        locationPerson.text = "$latitude, $longitude"
 
-                    } else {
-                        Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show()
+        if (hasLocationPermission()) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+
+                    val latitude = location.latitude
+                    val longitude = location.longitude
+                    locationPerson.setOnClickListener{
+                        Intent(this, Maps::class.java).also {
+                            it.putExtra("Lat",latitude.toString())
+                            it.putExtra("Long",longitude.toString())
+                            startActivity(it)
+                        }
+
                     }
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val client = OkHttpClient()
+                            val url = "https://api.openweathermap.org/geo/1.0/reverse?lat=$latitude&lon=$longitude&limit=5&appid=${BuildConfig.API_KEY_LOCATION}"
+                            val request = Request.Builder().url(url).build()
+
+                            client.newCall(request).execute().use { response ->
+                                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                                val responseBody = response.body
+                                val body = responseBody?.string()
+                                if (!body.isNullOrEmpty()) {
+                                    val jsonArray = JSONArray(body)
+                                    val firstObj = jsonArray.getJSONObject(0)
+                                    val place = firstObj.getString("name")
+                                    val country = firstObj.getString("country")
+
+                                    withContext(Dispatchers.Main) {
+                                        locationPerson.text = "$place, $country"
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(this@FoodPage, "Failed to get location name", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: SecurityException) {
-                e.printStackTrace()
-                Toast.makeText(this, "Location permission error", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            requestLocationPermission()
         }
 
 
+
         val person=intent.getSerializableExtra("EXTRA_USER_DETAILS") as UserDetails
-
-
-
         val panel=Profile().apply { arguments= Bundle().apply {
             putSerializable("EXTRA_USER_DETAILS",person)
         } }
@@ -137,8 +177,6 @@ class FoodPage : AppCompatActivity() {
         }
 
     }
-
-
 
     private fun hasLocationPermission() =
         ActivityCompat.checkSelfPermission(this,

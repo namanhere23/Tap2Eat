@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Tap2Eat</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">AIzaSyBMn2wnhRiAaMQT9LMzxNgP_fyi6tMEv8Q.apps.googleusercontent.com</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyCWShYKfJdYTiRnDBck1Xo88xV3KbcGxlc</string>
+    <string name="stripe_publishable_key">pk_test_51S3wfbHFaR45RYvPSNuVnb3ZUtds2OVBpn23GbSk7J9IYU09NhpeYbba8m9JsmLlmilsh5vr2gzwVtCYMtKHgvOF004yGkZHKK</string>
 </resources>

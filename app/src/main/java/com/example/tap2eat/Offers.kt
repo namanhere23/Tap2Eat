@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.os.bundleOf
 import com.google.android.material.button.MaterialButton
 import java.io.File
@@ -22,7 +24,7 @@ class Offers : Fragment(R.layout.fragment_offers) {
         val offerCode = arguments?.getInt("offerCode") ?: 0
 
         val blockTextView=view.findViewById<MaterialButton>(R.id.offerText)
-        val blockButton=view.findViewById<LinearLayout>(R.id.offerButton)
+        val blockButton=view.findViewById<ConstraintLayout>(R.id.offerButton)
 
         blockTextView.text = offerText.toString()
         if(offerCode%2==1) {
@@ -35,13 +37,5 @@ class Offers : Fragment(R.layout.fragment_offers) {
 
     }
 
-    fun updateBlockText(text: String, code:Int): Bundle {
-        val fragment=Offers()
-        val bundle= Bundle()
-        bundle.putString("offerText",text)
-        bundle.putInt("offerCode",code)
-        fragment.arguments=bundle
-        return bundle
-    }
 
 

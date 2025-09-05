@@ -93,7 +93,7 @@ class Payment : AppCompatActivity() {
     private fun initiateUPIPayment(amount: Int) {
         val upiUri = Uri.parse("upi://pay?pa=namanhere23@oksbi&pn=Naman%20Gulati&am=$amount.00&cu=INR&aid=uGICAgKCi3anvHw")
         val upiIntent = Intent(Intent.ACTION_VIEW, upiUri)
-        
+
         try {
             startActivity(Intent.createChooser(upiIntent, "Choose UPI App"))
         } catch (e: Exception) {
