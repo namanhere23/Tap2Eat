@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnContinue: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -56,6 +57,10 @@ class MainActivity : AppCompatActivity() {
 
         btnContinue.setOnClickListener {
             requestLocationPermission()
+            if(!hasLocationPermission()) {
+                return@setOnClickListener
+            }
+
             val emailText = etEmail.text.toString().trim()
 
             if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
@@ -107,9 +112,12 @@ class MainActivity : AppCompatActivity() {
 
         val logoGoogle=findViewById<ImageView>(R.id.logo)
 
-
         logoGoogle.setOnClickListener {
             requestLocationPermission()
+            if(!hasLocationPermission()) {
+                return@setOnClickListener
+            }
+
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setServerClientId(getString(R.string.default_web_client_id))
                 .setFilterByAuthorizedAccounts(false)
@@ -234,7 +242,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Google sign-in successful!", Toast.LENGTH_SHORT).show()
                   
                     val userDetails = UserDetails("", user?.email ?: "", "", "")
-                    startActivity(Intent(this, FoodPage::class.java).apply {
+                    startActivity(Intent(this, Details_Page::class.java).apply {
                         putExtra("EXTRA_USER_DETAILS", userDetails)
                     })
                     finish()
@@ -267,12 +275,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun hasLocationPermission() =
         ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
     private fun requestLocationPermission() {
         if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION),0)
+            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
     }
 }

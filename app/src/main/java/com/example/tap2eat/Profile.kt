@@ -3,6 +3,7 @@ package com.example.tap2eat
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,12 +27,17 @@ class Profile : Fragment() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             val person = arguments?.getSerializable("EXTRA_USER_DETAILS") as? UserDetails
             val profilePic = view.findViewById<ImageView>(R.id.profilePic)
-            person?.let {
-                if (!it.photo.isNullOrEmpty()) {
-                profilePic.setImageURI(Uri.fromFile(File(it.photo)))
-            } else {
-                profilePic.setImageResource(R.drawable.ic_profile_pic)
-            }
+            person?.email?.let { email ->
+                loadUserByEmail(email) { user ->
+                    if (user != null) {
+
+                        if (!user.photo.isNullOrEmpty()) {
+                            profilePic.setImageURI(Uri.fromFile(File(user.photo)))
+                        } else {
+                            profilePic.setImageResource(R.drawable.ic_profile_pic)
+                        }
+                    }
+                }
             }
 
             profilePic.setOnClickListener {
@@ -40,9 +46,24 @@ class Profile : Fragment() {
                     startActivity(it)
                 }
             }
-
-
-
-
         }
+
+    private fun loadUserByEmail(email: String, onResult: (UserDetails?) -> Unit) {
+        if (FirebaseApp.getApps(requireContext()).isEmpty()) {
+            FirebaseApp.initializeApp(requireContext())
+        }
+
+        val database = FirebaseDatabase.getInstance()
+        val usersRef = database.getReference("users")
+
+        val userId = email.replace(".", "_")
+        usersRef.child(userId).get()
+            .addOnSuccessListener { snap ->
+                val user = snap.getValue(UserDetails::class.java)
+                onResult(user)
+            }
+            .addOnFailureListener { e ->
+                onResult(null)
+            }
+    }
 }
