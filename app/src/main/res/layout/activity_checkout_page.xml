@@ -1,38 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:background="@color/white"
+    android:orientation="vertical"
     tools:context=".CheckoutPage">
 
-        <LinearLayout
-            android:id="@+id/main"
-            android:orientation="vertical"
+        <ScrollView
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/topPanel"
-            android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_height="wrap_content"/>
-
-                <FrameLayout
-                    android:id="@+id/cart"
+                <LinearLayout
+                    android:id="@+id/main"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    >
+                    android:background="@color/white">
 
+                        <FrameLayout
+                            android:id="@+id/topPanel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp" />
 
-                </FrameLayout>
-        </LinearLayout>
+                        <FrameLayout
+                            android:id="@+id/cart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp" />
 
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/contPayment"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:layout_marginHorizontal="45dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="20dp"
+                            android:backgroundTint="#f04c5c"
+                            android:text="Complete Payment"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            app:cornerRadius="15dp" />
 
+                </LinearLayout>
+        </ScrollView>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-</ScrollView>
+                <ImageView
+                    android:id="@+id/paymentSuccessImage"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:src="@drawable/paymentsuccess"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

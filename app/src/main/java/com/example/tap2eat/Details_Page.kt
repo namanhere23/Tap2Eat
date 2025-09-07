@@ -39,6 +39,7 @@ class Details_Page : AppCompatActivity() {
 
     private lateinit var profileImage: ImageView
     private var profileImageUrl: String? = null
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,7 +58,6 @@ class Details_Page : AppCompatActivity() {
         val etMobileDetails=findViewById<EditText>(R.id.etMobileDetails)
         val back=findViewById<ImageView>(R.id.back)
 
-
         person?.email?.let { email ->
             loadUserByEmail(email) { user ->
                 if (user != null) {
@@ -69,10 +69,10 @@ class Details_Page : AppCompatActivity() {
                     etMobileDetails.setText(user.mobile ?: "")
 
                     if (!user.photo.isNullOrEmpty()) {
-                        profileImage.setImageURI(Uri.fromFile(File(user.photo)))
-                        if (profileImageUrl.isNullOrEmpty()) {
-                            profileImageUrl = user.photo
-                        }
+                        Glide.with(this)
+                            .load(user.photo)
+                            .into(profileImage)
+                        profileImageUrl=user.photo
                     } else {
                         profileImage.setImageResource(R.drawable.ic_profile_pic)
                         profileImageUrl= null
@@ -86,20 +86,19 @@ class Details_Page : AppCompatActivity() {
             finish()
         }
 
+        val history=findViewById<MaterialButton>(R.id.history)
+        history.setOnClickListener() {
+            Intent(this,History::class.java).also {
+                it.putExtra("EXTRA_USER_DETAILS", person)
+                startActivity(it)
+            }
+        }
+
         if(person!=null)
         {
             etName.setText(person!!.name)
             etemail.setText(person!!.email)
             etMobileDetails.setText(person!!.mobile)
-        }
-
-        if (person != null) {
-            if (!(person.photo.isNullOrEmpty()))
-                profileImage.setImageURI(Uri.fromFile(File(person.photo)))
-            else{
-                profileImage.setImageResource(R.drawable.ic_profile_pic)
-                profileImageUrl = null
-            }
         }
 
         val btn=findViewById<com.google.android.material.button.MaterialButton>(R.id.cont2)

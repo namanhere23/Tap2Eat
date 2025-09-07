@@ -1,33 +1,30 @@
 package com.example.tap2eat
 
+
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.tap2eat.BuildConfig.API_KEY_LOCATION
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONArray
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.*
-import java.io.IOException
 
 
 class FoodPage : AppCompatActivity() {
+    var cartItems = arrayListOf<CartItems>()
     lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var cartFragment: CartFragment? = null
+
     @SuppressLint("MissingInflatedId", "MissingPermission", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,100 +37,17 @@ class FoodPage : AppCompatActivity() {
             insets
         }
 
-        val cartItems =  arrayListOf(
-            CartItems("Pizza", 180, 0, R.drawable.pizza),
-            CartItems("Burger", 80, 0, R.drawable.burger),
-            CartItems("Sandwich", 50, 0, R.drawable.sandwich),
-            CartItems("Tru", 10, 0, R.drawable.tru) ,
-            CartItems("Cake", 250, 0, R.drawable.cake),
-            CartItems("Dosa", 120, 0, R.drawable.dosa),
-            CartItems("Paneer", 150, 0, R.drawable.paneer),
-            CartItems("Veg Biryani", 150, 0, R.drawable.vbiryani),
-            CartItems("Coffee", 25, 0, R.drawable.coffee)
-        )
-
-        val searchView = findViewById<SearchView>(R.id.searchView)
-        val searchAutoComplete =
-            searchView.findViewById<androidx.appcompat.widget.SearchView.SearchAutoComplete>(
-                androidx.appcompat.R.id.search_src_text
-            )
-
-        searchAutoComplete.setTextColor(Color.BLACK)       // text color
-        searchAutoComplete.setHintTextColor(Color.GRAY)   // hint color
-
-        val cartFragment = CartFragment().apply {
-            arguments = Bundle().apply {
-                putSerializable("EXTRA_ALL_ITEMS", cartItems)
-            }
-        }
-
+        cartFragment = CartFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.cart, cartFragment)
+            .replace(R.id.cart, cartFragment!!)
+
             .commit()
 
-        requestLocationPermission()
-        if(!hasLocationPermission()) {
-            Toast.makeText(this, "Give Location Permissions to continue", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
-        val locationPerson = findViewById<TextView>(R.id.location)
-
-
-
-
-        if (hasLocationPermission()) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-
-                    val latitude = location.latitude
-                    val longitude = location.longitude
-                    locationPerson.setOnClickListener{
-                        Intent(this, Maps::class.java).also {
-                            it.putExtra("Lat",latitude.toString())
-                            it.putExtra("Long",longitude.toString())
-                            startActivity(it)
-                        }
-
-                    }
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val client = OkHttpClient()
-                            val url = "https://api.openweathermap.org/geo/1.0/reverse?lat=$latitude&lon=$longitude&limit=5&appid=${BuildConfig.API_KEY_LOCATION}"
-                            val request = Request.Builder().url(url).build()
-
-                            client.newCall(request).execute().use { response ->
-                                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                                val responseBody = response.body
-                                val body = responseBody?.string()
-                                if (!body.isNullOrEmpty()) {
-                                    val jsonArray = JSONArray(body)
-                                    val firstObj = jsonArray.getJSONObject(0)
-                                    val place = firstObj.getString("name")
-                                    val country = firstObj.getString("country")
-
-                                    withContext(Dispatchers.Main) {
-                                        locationPerson.text = "$place, $country"
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(this@FoodPage, "Failed to get location name", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-                } else {
-                    Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show()
+        loadItems { success ->
+            if (success) {
+                cartFragment?.updateCart(cartItems)
                 }
-            }
-        } else {
-            requestLocationPermission()
         }
-
-
 
         val person=intent.getSerializableExtra("EXTRA_USER_DETAILS") as UserDetails
         val panel=Profile().apply { arguments= Bundle().apply {
@@ -191,16 +105,28 @@ class FoodPage : AppCompatActivity() {
 
     }
 
-    private fun hasLocationPermission() =
-        ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED
-
-    private fun requestLocationPermission() {
-        if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
+    private fun loadItems(onResult: (Boolean) -> Unit) {
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
         }
-    }
 
+        val database = FirebaseDatabase.getInstance()
+        val itemsRef = database.getReference("items")
+
+        itemsRef.get()
+            .addOnSuccessListener { ele ->
+                for (itemSnap in ele.children) {
+                    val item = itemSnap.getValue(CartItems::class.java)
+                    item?.let { cartItems.add(it) }
+                }
+                onResult(true)
+            }
+
+            .addOnFailureListener { e ->
+                Log.e("Firebase", "Failed to load items", e)
+                onResult(false)
+            }
+
+    }
 
 }

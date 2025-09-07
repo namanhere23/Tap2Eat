@@ -5,23 +5,23 @@ import android.os.Parcelable
 import java.io.Serializable
 
 data class CartItems (
-    var item: String,
-    var price: Int,
-    var quantity: Int,
-    var photo: Int
+    var item: String="",
+    var price: Int=0,
+    var quantity: Int=0,
+    var photo: String=""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readInt(),
         parcel.readInt(),
-        parcel.readInt()
+        parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(item)
         parcel.writeInt(price)
         parcel.writeInt(quantity)
-        parcel.writeInt(photo)
+        parcel.writeString(photo)
     }
 
     override fun describeContents(): Int = 0

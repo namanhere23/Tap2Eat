@@ -7,8 +7,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -55,6 +57,56 @@ class MainActivity : AppCompatActivity() {
         }
 
         auth = Firebase.auth
+
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            var emaill= currentUser.email
+            emaill?.let { emaill ->
+                loadUserByEmail(emaill) { user ->
+                    if (user != null) {
+                        if (user.name.toString().isNullOrEmpty()) {
+                            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
+                            Intent(this, Details_Page::class.java).apply {
+                                putExtra("EXTRA_USER_DETAILS", userDetails)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                finish()
+                                startActivity(this)
+                            }
+                        } else {
+                            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
+                            Intent(this, FoodPage::class.java).apply {
+                                putExtra("EXTRA_USER_DETAILS", userDetails)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                finish()
+                                startActivity(this)
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        val userDetails = UserDetails("", currentUser.email ?: "", "", "")
+                        Intent(this, Details_Page::class.java).apply {
+                            putExtra("EXTRA_USER_DETAILS", userDetails)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            finish()
+                            startActivity(this)
+                        }
+                    }
+                }
+            }
+
+
+
+        }
+
+        else
+        {
+            val kk=findViewById<LinearLayout>(R.id.main)
+            kk.visibility= View.VISIBLE
+        }
+
+
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnContinue = findViewById(R.id.cont)
@@ -102,41 +154,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()}
         }
 
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            var emaill= currentUser.email
-            emaill?.let { emaill ->
-                loadUserByEmail(emaill) { user ->
-                    if (user != null) {
-                        if (user.name.toString().isNullOrEmpty()) {
-                            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
-                            Intent(this, Details_Page::class.java).apply {
-                                putExtra("EXTRA_USER_DETAILS", userDetails)
-                                startActivity(this)
-                            }
-                        } else {
-                            val userDetails = UserDetails("", currentUser.email ?: "", "", "")
-                            Intent(this, FoodPage::class.java).apply {
-                                putExtra("EXTRA_USER_DETAILS", userDetails)
-                                startActivity(this)
-                            }
-                        }
-                    }
 
-                    else
-                    {
-                        val userDetails = UserDetails("", currentUser.email ?: "", "", "")
-                        Intent(this, Details_Page::class.java).apply {
-                            putExtra("EXTRA_USER_DETAILS", userDetails)
-                            startActivity(this)
-                        }
-                    }
-                }
-            }
-
-
-
-        }
 
 
         val logoGoogle=findViewById<ImageView>(R.id.logo)
@@ -278,37 +296,66 @@ class MainActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
-                    Toast.makeText(this, "Google sign-in successful!", Toast.LENGTH_SHORT).show()
+                    val name = user?.displayName
+                    val email = user?.email
+                    val phone = user?.phoneNumber
+                    val photoUrl = user?.photoUrl?.toString()
+                    var finalname= name
+                    var finalEmail= email
+                    var finalMobile=phone
+                    var finalphoto=photoUrl
 
-                    var emaill= user?.email
-                    emaill?.let { emaill ->
-                        loadUserByEmail(emaill) { user ->
-                            if (user != null) {
-                                if (user.name.toString().isNullOrEmpty()) {
-                                    val userDetails = UserDetails("", emaill, "", "")
-                                    Intent(this, Details_Page::class.java).apply {
-                                        putExtra("EXTRA_USER_DETAILS", userDetails)
-                                        startActivity(this)
-                                    }
-                                } else {
-                                    val userDetails = UserDetails("", emaill , "", "")
-                                    Intent(this, FoodPage::class.java).apply {
-                                        putExtra("EXTRA_USER_DETAILS", userDetails)
-                                        startActivity(this)
+                    email?.let { email ->
+                        loadUserByEmail(email) { userr ->
+                            if (userr != null) {
+                                finalname = (userr.name ?: name).toString()
+                                finalEmail = userr.email ?: email
+                                finalMobile = userr?.mobile ?: phone
+                                finalphoto = (userr.photo ?: photoUrl).toString()
+                            }
+
+                            val profile=UserDetails(finalname, finalEmail, finalMobile, finalphoto)
+
+                            saveUser(profile) { success ->
+                                var emaill= user?.email
+                                emaill?.let { emaill ->
+                                    loadUserByEmail(emaill) { user ->
+                                        if (user != null) {
+                                            if (finalMobile?.length !=10) {
+                                                val userDetails = UserDetails( name ?: "",  email ?: "", phone ?: "",photoUrl ?: "" )
+                                                Intent(this, Details_Page::class.java).apply {
+                                                    putExtra("EXTRA_USER_DETAILS", userDetails)
+                                                    startActivity(this)
+                                                }
+                                            } else {
+                                                val userDetails = UserDetails( name ?: "",  email ?: "", phone ?: "",photoUrl ?: "" )
+                                                Intent(this, FoodPage::class.java).apply {
+                                                    putExtra("EXTRA_USER_DETAILS", userDetails)
+                                                    startActivity(this)
+                                                }
+                                            }
+                                        }
+
+                                        else
+                                        {
+                                            val userDetails = UserDetails( name ?: "",  email ?: "", phone ?: "",photoUrl ?: "" )
+                                            Intent(this, Details_Page::class.java).apply {
+                                                putExtra("EXTRA_USER_DETAILS", userDetails)
+                                                startActivity(this)
+                                            }
+                                        }
                                     }
                                 }
                             }
 
-                            else
-                            {
-                                val userDetails = UserDetails("", emaill , "", "")
-                                Intent(this, Details_Page::class.java).apply {
-                                    putExtra("EXTRA_USER_DETAILS", userDetails)
-                                    startActivity(this)
-                                }
-                            }
                         }
                     }
+
+
+
+                    Toast.makeText(this, "Google sign-in successful!", Toast.LENGTH_SHORT).show()
+
+
 
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -346,6 +393,29 @@ class MainActivity : AppCompatActivity() {
         if (!hasLocationPermission()) {
             ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
+    }
+
+    private fun saveUser(user: UserDetails , onResult: (Boolean) -> Unit) {
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
+
+        val database = FirebaseDatabase.getInstance()
+        val usersRef = database.getReference("users")
+        val userId = user.email?.replace(".", "_")
+
+        if (userId != null) {
+            usersRef.child(userId).setValue(user)
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed to save user: ${e.message}", Toast.LENGTH_SHORT).show()
+                    onResult(false)
+                }
+
+                .addOnSuccessListener {
+                    onResult(true)
+                }
+        }
+
     }
 
     private fun loadUserByEmail(email: String, onResult: (UserDetails?) -> Unit) {
