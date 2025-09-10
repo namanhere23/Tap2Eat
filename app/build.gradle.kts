@@ -120,6 +120,7 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     implementation("com.google.ai.client.generativeai:generativeai:0.8.0")
+    implementation("com.google.android.material:material:1.13.0")
 
     implementation(libs.androidx.storage)
     implementation(libs.car.ui.lib)

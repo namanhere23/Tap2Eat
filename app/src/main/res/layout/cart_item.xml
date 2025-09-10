@@ -6,10 +6,10 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_card"
     android:layout_marginTop="15dp"
-    android:layout_marginHorizontal="30dp"
+    android:layout_marginHorizontal="5dp"
     tools:context=".CartItem">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,26 +21,39 @@
 
         <ImageView
             android:id="@+id/photo"
-            android:layout_width="129dp"
-            android:layout_height="88dp"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="10dp"
-            android:src="@color/white" />
+            android:layout_marginStart="24dp"
+            android:src="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="0dp" />
 
         <TextView
             android:id="@+id/cartItem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginEnd="50dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="25dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.63"
+            app:layout_constraintStart_toEndOf="@+id/photo"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="left"
+            app:constraint_referenced_ids="linearLayout" />
 
-    <LinearLayout
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -50,57 +63,91 @@
         tools:layout_editor_absoluteX="16dp">
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="20dp"
-            android:gravity="end"
+            android:paddingHorizontal="25dp"
+            android:paddingVertical="20dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/price"
-                android:layout_width="147dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="left|center"
-                android:paddingHorizontal="35dp"
                 android:text=""
                 android:textColor="@color/black"
                 android:textSize="25dp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/minusButton"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:backgroundTint="#FF0000"
-                android:text="-"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:id="@+id/CartQuantity"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="5dp"
-                android:text=" 0 "
-                android:textColor="@color/black"
-                android:textSize="25dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/plusButton"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:backgroundTint="#008000"
-                android:text="+"
-                android:textColor="@color/white" />
+                android:background="@drawable/rounded_four_sides"
+                android:gravity="end"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/minusButton"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#FF0000"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="#FF0000"
+                    android:textSize="25sp"
+                    app:layout_constraintEnd_toStartOf="@+id/CartQuantity"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:layout_editor_absoluteY="0dp" />
+
+                <TextView
+                    android:id="@+id/CartQuantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:gravity="center"
+                    android:text=" 0 "
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/plusButton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/minusButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/plusButton"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:backgroundTint="#FF0000"
+                    android:text="+"
+                    android:textColor="#008000"
+                    android:textSize="25sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/CartQuantity"
+                    tools:layout_editor_absoluteY="0dp" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrier3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="left" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="left" />
 
 
-        </LinearLayout>
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -28,7 +28,7 @@
             android:name=".CheckoutActivity"
             android:exported="false"
             android:label="@string/title_activity_checkout"
-            android:theme="@style/Theme.Tap2Eat" /> <!-- This element is required to enable Google Pay in your app. -->
+            android:theme="@style/Theme.Tap2Eat" />
         <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />

@@ -1,13 +1,10 @@
 package com.example.tap2eat
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.credentials.Credential
 import android.net.Uri
 import android.os.Bundle
-import android.service.credentials.GetCredentialRequest
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
@@ -20,19 +17,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import android.util.Patterns
-import androidx.credentials.CustomCredential
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.bumptech.glide.Glide
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 
 class Details_Page : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")

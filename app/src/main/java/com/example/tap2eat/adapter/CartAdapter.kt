@@ -6,13 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.tap2eat.CartItems
 import com.example.tap2eat.databinding.CartItemBinding
-import java.util.ArrayList
 
 class CartAdapter(private val onTotalChanged: (Int) -> Unit):
     RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
     private val cartItems: MutableList<CartItems> = mutableListOf()
-    private val selectedCartItems: MutableList<CartItems> = mutableListOf()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
@@ -64,11 +62,4 @@ class CartAdapter(private val onTotalChanged: (Int) -> Unit):
         cartItems.addAll(newList)
         notifyDataSetChanged()
     }
-
-    fun setFilteredList(newList: List<CartItems>){
-        cartItems.clear()
-        cartItems.addAll(newList)
-        notifyDataSetChanged()
-    }
-
 }

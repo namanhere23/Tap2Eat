@@ -2,7 +2,6 @@ package com.example.tap2eat
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.io.Serializable
 
 data class CartItems (
     var item: String="",

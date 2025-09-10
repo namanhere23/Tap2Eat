@@ -3,7 +3,6 @@ package com.example.tap2eat
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -36,7 +35,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnContinue: MaterialButton
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -419,8 +418,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadUserByEmail(email: String, onResult: (UserDetails?) -> Unit) {
-        if (FirebaseApp.getApps(this).isEmpty()) {
-            FirebaseApp.initializeApp(this)
+        if (FirebaseApp.getApps(this    ).isEmpty()) {
+            FirebaseApp.initializeApp(this  )
         }
 
         val database = FirebaseDatabase.getInstance()
@@ -434,7 +433,7 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e("Profile", "Failed to read user", e)
-                Toast.makeText(this, "Read failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this , "Read failed: ${e.message}", Toast.LENGTH_SHORT).show()
                 onResult(null)
             }
     }

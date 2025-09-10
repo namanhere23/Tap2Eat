@@ -24,20 +24,21 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteY="-2dp" />
 
+
     <TextView
         android:id="@+id/priceTotal"
         android:layout_width="wrap_content"
-        android:layout_height="56dp"
+        android:layout_height="53dp"
+        android:layout_marginEnd="20dp"
         android:gravity="center"
         android:text="0"
         android:textColor="@color/black"
-        android:layout_marginEnd="20dp"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textView2"
-        tools:layout_editor_absoluteY="0dp" />
-
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/button2"
@@ -46,7 +47,7 @@
         android:layout_marginHorizontal="45dp"
         android:layout_marginTop="28dp"
         android:backgroundTint="#f04c5c"
-        android:text="CheckOut"
+        android:text="Save Cart"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -60,19 +61,40 @@
         android:id="@+id/searchView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="8dp"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/deleteCart"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         app:layout_constraintVertical_bias="0.086"
         tools:ignore="MissingConstraints" />
 
+
+    <ImageView
+        android:id="@+id/deleteCart"
+        android:layout_width="34dp"
+        android:layout_height="46dp"
+        android:layout_margin="30dp"
+        android:src="@drawable/baseline_delete_forever_24"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/searchView"
+        app:layout_constraintTop_toBottomOf="@+id/priceTotal"
+        app:layout_constraintVertical_bias="0.696"
+        tools:ignore="MissingConstraints" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
+        android:paddingBottom="15dp"
+        android:layout_marginHorizontal="25dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
+        android:background="#3BCECACA"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         tools:layout_editor_absoluteX="-8dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -93,21 +93,32 @@ class CheckoutPage : AppCompatActivity() {
         button.setOnClickListener {
             getCustomerId()
         }
+        person= (intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails)!!
 
-        val cartItems = intent.getParcelableArrayListExtra<CartItems>("cartItemsBuy") ?: arrayListOf()
-        val totalAmount=intent.getIntExtra("EXTRA_TOTAL_AMOUNT",0)
-        val cartFragment = CartFragment().apply {
-            arguments = Bundle().apply {
-                putParcelableArrayList("EXTRA_ALL_ITEMS", cartItems)
-                putInt("EXTRA_TOTAL_AMOUNT", totalAmount)
-                putInt("EXTRA_CHECKOUT_OR_NOT", 25)
+        person?.email?.let {
+            loadUserCart(it){  cartItemsSelected ->
+                var totalAmount=0
+                for (item in cartItemsSelected) {
+                    if (item.quantity > 0) {
+                        totalAmount += item.price * item.quantity
+                    }
+                }
+                val cartFragment = CartFragment().apply {
+                    arguments = Bundle().apply {
+                        putParcelableArrayList("EXTRA_ALL_ITEMS", ArrayList(cartItemsSelected))
+                        putInt("EXTRA_TOTAL_AMOUNT", totalAmount)
+                        putInt("EXTRA_CHECKOUT_OR_NOT", 25)
+                    }
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.cart, cartFragment)
+                    .commit()
             }
         }
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.cart, cartFragment)
-            .commit()
 
-        val person=intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
+
+
+
 
         val panel=Profile().apply { arguments= Bundle().apply {
                     putSerializable("EXTRA_USER_DETAILS", person)
@@ -237,12 +248,7 @@ class CheckoutPage : AppCompatActivity() {
         }
 
         if (userId != null) {
-            val orderData = mapOf(
-                "items" to orderNames,
-                "amount" to amount,
-                "timestamp" to System.currentTimeMillis(),
-                "status" to "Placed"
-            )
+            val orderData = mapOf("items" to orderNames, "amount" to amount, "timestamp" to System.currentTimeMillis(), "status" to "Placed")
 
             val userOrdersRef = usersRef.child(userId)
             userOrdersRef.get().addOnSuccessListener { snapshot ->
@@ -257,5 +263,29 @@ class CheckoutPage : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun loadUserCart(email: String, onResult: (List<CartItems>) -> Unit) {
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
+
+        val database = FirebaseDatabase.getInstance()
+        val usersRef = database.getReference("cart")
+
+        val userId = email.replace(".", "_")
+        usersRef.child(userId)
+            .get()
+            .addOnSuccessListener { snap ->
+                val cartList = mutableListOf<CartItems>()
+                for (itemSnap in snap.children) {
+                    val item = itemSnap.getValue(CartItems::class.java)
+                    item?.let { cartList.add(it) }
+                }
+                onResult(cartList)
+            }
+            .addOnFailureListener { e ->
+                onResult(emptyList())
+            }
     }
 }

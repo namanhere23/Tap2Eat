@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -28,7 +27,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
-import java.io.File
 import java.io.IOException
 
 
@@ -74,6 +72,7 @@ class Profile : Fragment() {
             val btnChatbot = view.findViewById<MaterialButton>(R.id.btnChatbot)
             btnChatbot.setOnClickListener {
                 val intent = Intent(requireContext(), Gemini::class.java)
+                intent.putExtra("EXTRA_USER_DETAILS", person)
                 startActivity(intent)
             }
 
@@ -100,7 +99,7 @@ class Profile : Fragment() {
 
                         }
 
-                        CoroutineScope(Dispatchers.IO).launch {
+                            CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 val client = OkHttpClient()
                                 val url = "https://api.openweathermap.org/geo/1.0/reverse?lat=$latitude&lon=$longitude&limit=5&appid=${BuildConfig.API_KEY_LOCATION}"
@@ -137,6 +136,17 @@ class Profile : Fragment() {
             }
         }
 
+    private fun hasLocationPermission() =
+        ActivityCompat.checkSelfPermission(requireContext(),
+            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
+
+    private fun requestLocationPermission() {
+        if (!hasLocationPermission()) {
+            ActivityCompat.requestPermissions(requireContext() as Activity,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
+        }
+    }
+
     private fun loadUserByEmail(email: String, onResult: (UserDetails?) -> Unit) {
         if (FirebaseApp.getApps(requireContext()).isEmpty()) {
             FirebaseApp.initializeApp(requireContext())
@@ -152,19 +162,10 @@ class Profile : Fragment() {
                 onResult(user)
             }
             .addOnFailureListener { e ->
+                Log.e("Profile", "Failed to read user", e)
+                Toast.makeText(requireContext(), "Read failed: ${e.message}", Toast.LENGTH_SHORT).show()
                 onResult(null)
             }
-    }
-
-    private fun hasLocationPermission() =
-        ActivityCompat.checkSelfPermission(requireContext(),
-            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED
-
-    private fun requestLocationPermission() {
-        if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(requireContext() as Activity,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
-        }
     }
 
 }

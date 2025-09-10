@@ -1,7 +1,7 @@
 package com.example.tap2eat
 
-import ChatViewModel
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -25,13 +25,14 @@ class Gemini : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         chatViewModel.loadItems(this) { success ->
+    
         }
 
-        val profile=intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
-
+        val profile = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
         profile?.let {
             chatViewModel.loadUserOrders(this, it) { success, orders -> }
         }
+
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -44,11 +45,15 @@ class Gemini : ComponentActivity() {
 
 @Composable
 fun ChatPage(viewModel: ChatViewModel) {
-    Column(modifier = Modifier.padding(horizontal = 15.dp).padding(bottom = 80.dp).padding(top = 20.dp)) {
+    Column(
+        modifier = Modifier.padding(horizontal = 15.dp).padding(bottom = 80.dp).padding(top = 20.dp)
+    ) {
         AppHeader()
         MessageList(
             messages = viewModel.messageList,
-            modifier = Modifier.weight(1f).padding(8.dp)
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
         )
         MessageInput { msg ->
             if (msg.isNotBlank()) viewModel.sendMessage(msg)
@@ -94,7 +99,9 @@ fun MessageRow(message: MessageModel) {
     val textColor = if (isModel) Color.Black else Color.White
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
         horizontalArrangement = if (isModel) Arrangement.Start else Arrangement.End
     ) {
         Surface(
