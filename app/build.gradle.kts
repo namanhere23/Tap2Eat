@@ -3,9 +3,10 @@ import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 val props = Properties()
@@ -55,16 +56,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-        force("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
-        force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
-        force("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-        force("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
 }
 
@@ -94,8 +86,8 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    implementation("com.stripe:stripe-android:20.37.0")
-    implementation("com.stripe:financial-connections:20.37.0")
+    implementation("com.stripe:stripe-android:21.28.1")
+    implementation("com.stripe:financial-connections:21.28.1")
     implementation("com.stripe:stripe-java:22.0.0")
 
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
@@ -133,4 +125,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3" )
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
     implementation ("androidx.activity:activity-ktx:1.9.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
