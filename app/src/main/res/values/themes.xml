@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.Tap2Eat" parent="Base.Theme.Tap2Eat" />
+    <style name="Theme.App.Tap2Eat" parent="Theme.Tap2Eat">
+        <item name="postSplashScreenTheme">@style/Base.Theme.Tap2Eat</item>
+    </style>
 </resources>

@@ -41,6 +41,8 @@ class Profile : Fragment() {
 
 
 
+
+
         @SuppressLint("MissingPermission")
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -48,9 +50,11 @@ class Profile : Fragment() {
             val person = arguments?.getSerializable("EXTRA_USER_DETAILS") as? UserDetails
             val profilePic = view.findViewById<ImageView>(R.id.profilePic)
             person?.email?.let { email ->
-                loadUserByEmail(email) { user ->
+                loadUserByEmail(email) addOnSuccessListener@{ user ->
                     if (user != null) {
-
+                        if (context == null || !isAdded) {
+                            return@addOnSuccessListener
+                        }
                         if (!user.photo.isNullOrEmpty()) {
                             Glide.with(this)
                                 .load(user.photo)

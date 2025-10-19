@@ -137,7 +137,6 @@ class FoodPage : AppCompatActivity() {
             loadUserByEmail(person.email!!) { user ->
                 if (user != null) {
                     headerUserName?.text = user.name ?: "Welcome User"
-
                     if (!user.photo.isNullOrEmpty()) {
                         if (headerProfilePic != null) {
                             Glide.with(this)

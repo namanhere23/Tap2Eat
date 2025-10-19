@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true"
+    android:id="@+id/scrollViewDetailsPage"
+    >
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -24,11 +31,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
+            android:layout_height="100dp"
             android:layout_marginTop="68dp"
             android:background="@drawable/rounded_bg"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="0dp"
-            android:layout_height="100dp">
+            tools:layout_editor_absoluteX="0dp">
 
 
             <androidx.constraintlayout.widget.Guideline
@@ -36,8 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="50dp"
-               />
+                app:layout_constraintGuide_begin="50dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -45,16 +51,16 @@
             android:id="@+id/profileImage"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:padding="20dp"
             android:layout_gravity="center"
             android:background="@drawable/circle"
             android:clipToOutline="true"
+            android:padding="20dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_profile_pic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="2dp"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteY="2dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -120,16 +126,16 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/cont2"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            app:backgroundTint="@android:color/transparent"
-            android:text="Update Profile"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:cornerRadius="15dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cont2"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Update Profile"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:backgroundTint="@android:color/transparent"
+                app:cornerRadius="15dp" />
         </LinearLayout>
 
 
@@ -161,6 +167,8 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:cornerRadius="15dp" />
+
     </LinearLayout>
 
 </LinearLayout>
+</ScrollView>
