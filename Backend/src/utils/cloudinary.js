@@ -11,17 +11,13 @@ cloudinary.config({
 const uploadOnCloudinary=async (localFilePath)=>{
     try{
         if(!localFilePath) return null
-        
-        console.log(localFilePath)
         const mimeType = mime.lookup(localFilePath);
-        console.log(mimeType)
 
         let resourceType = "raw"; 
         if (mimeType?.startsWith("image/")) resourceType = "image";
         else if (mimeType?.startsWith("video/")) resourceType = "video";
         else resourceType = "raw";
 
-        console.log(resourceType)
         // Upload
         const response=await cloudinary.uploader.upload(localFilePath,{
             resource_type: resourceType,

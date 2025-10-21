@@ -1,10 +1,12 @@
 package com.example.tap2eat
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageView
@@ -19,10 +21,19 @@ import java.io.File
 import android.util.Patterns
 import androidx.core.content.ContentProviderCompat.requireContext
 import com.bumptech.glide.Glide
+import com.example.tap2eat.API.ApiUploadUtilities
+import com.example.tap2eat.models.MediaModel
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class Details_Page : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
@@ -155,7 +166,9 @@ class Details_Page : AppCompatActivity() {
 
         profileImage.setOnClickListener {
             requestExternalStoragePermission()
+            Log.d("Hello","Hello")
             pickImageLauncher.launch("image/*")
+            Log.d("Hello","Hello")
         }
 
         val logout=findViewById<com.google.android.material.button.MaterialButton>(R.id.logout)
@@ -199,36 +212,70 @@ class Details_Page : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToInternalStorage(uri: Uri): String? {
-        return try {
-            val inputStream = contentResolver.openInputStream(uri)
-            val fileName = "user_image_${System.currentTimeMillis()}.jpg"
-            val file = File(filesDir, fileName)
-            inputStream?.use { input ->
-                file.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            file.absolutePath
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Failed to save image", Toast.LENGTH_SHORT).show()
-            null
-        }
-    }
 
     private val pickImageLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
+            val url=""
+            Log.d("Hello2","Hello2")
+            uploadImageToServer(uri){media->
+                if(media!=null){
+                    profileImageUrl = media.data.url
+                }
+                else{
+                    profileImageUrl = null
+                }
+            }
             profileImage.setImageURI(uri)
-            val url=saveImageToInternalStorage(uri)
-                profileImageUrl = url
+
         } else{
             profileImage.setImageResource(R.drawable.ic_profile_pic)
             profileImageUrl = null
         }
     }
+
+    private fun uploadImageToServer(uri: Uri, onResult: (MediaModel?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val context = profileImage.context
+            val file = uriToFile(uri, context)
+
+            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+            val body = MultipartBody.Part.createFormData("media", file.name, requestFile)
+
+            val response = ApiUploadUtilities.getApiInterface().uploadMedia(body)
+            Log.d("Hello4",response.body().toString())
+
+            withContext(Dispatchers.Main) {
+            if(response.isSuccessful){
+                onResult(response.body())
+            } else {
+                println("Error in Uploading")
+                onResult(null)
+            }}
+        }
+    }
+
+    private fun uriToFile(uri: Uri, context: Context): File {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val fileName = getFileName(uri, context)
+        val tempFile = File(context.cacheDir, fileName)
+        tempFile.outputStream().use { output ->
+            inputStream?.copyTo(output)
+        }
+        return tempFile
+    }
+
+    private fun getFileName(uri: Uri, context: Context): String {
+        var name = "temp_file"
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (it.moveToFirst()) name = it.getString(nameIndex)
+        }
+        return name
+    }
+
 
     private fun saveUser(user: UserDetails , onResult: (Boolean) -> Unit) {
         if (FirebaseApp.getApps(this).isEmpty()) {
@@ -273,7 +320,4 @@ class Details_Page : AppCompatActivity() {
                 onResult(null)
             }
     }
-
-
-
 }

@@ -12,7 +12,6 @@ const uploadMedia=asyncHandler(async(req,res)=>{
     }
 
     const cloudinaryMedia=await uploadOnCloudinary(localFilePath)
-    console.log(cloudinaryMedia)
     if(!cloudinaryMedia){
         throw new ApiError(400,"Error while Uploading")
     }
