@@ -21,6 +21,7 @@ const uploadOnCloudinary=async (localFilePath)=>{
         // Upload
         const response=await cloudinary.uploader.upload(localFilePath,{
             resource_type: resourceType,
+            flags: resourceType === "raw" ? "attachment" : undefined,
         })
 
         // If correctly Uploaded
