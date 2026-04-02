@@ -73,7 +73,7 @@ Because this backend is located inside a sub-folder (`Cloudinary_Backend`), you 
 
 ### Step 2: Set Environment Variables
 Add your secrets securely to your provider's dashboard using the variables defined in step 3 above:
-- `CORS_ORIGIN` (Your frontend's production URL)
+- `CORS_ORIGIN=*` 
 - `CLOUDNINARY_CLOUD_NAME`
 - `CLOUDNINARY_API_KEY`
 - `CLOUDNINARY_API_SECRET`
