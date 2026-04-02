@@ -14,7 +14,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient_purple"
     android:orientation="vertical"
-    tools:context=".Details_Page">
+    tools:context=".uiPages.Details_Page">
 
     <ImageView
         android:id="@+id/back"

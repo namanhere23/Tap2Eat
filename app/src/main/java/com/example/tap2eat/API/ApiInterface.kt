@@ -1,6 +1,6 @@
 package com.example.tap2eat.API
 
-import com.example.tap2eat.Utils.SECRET_KEY
+import com.example.tap2eat.utils.Utils.SECRET_KEY
 import com.example.tap2eat.models.CustomerModel
 import EphemeralKeyModel
 import com.example.tap2eat.models.PaymentIntentModel

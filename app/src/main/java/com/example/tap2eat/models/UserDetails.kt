@@ -1,4 +1,4 @@
-package com.example.tap2eat
+package com.example.tap2eat.models
 
 import java.io.Serializable
 

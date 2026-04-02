@@ -25,7 +25,7 @@
             android:name=".SplashScreen"
             android:exported="false" />
         <activity
-            android:name=".Gemini"
+            android:name=".uiPages.Gemini"
             android:exported="true" />
         <activity
             android:name=".CheckoutActivity"
@@ -38,7 +38,7 @@
             android:value="true" />
 
         <activity
-            android:name=".History"
+            android:name=".uiPages.History"
             android:exported="false" />
         <activity
             android:name=".tickPage"
@@ -56,22 +56,22 @@
             android:name=".StripePaymentActivity"
             android:exported="false" />
         <activity
-            android:name=".CheckoutPage"
+            android:name=".uiPages.CheckoutPage"
             android:exported="false" />
         <activity
             android:name=".YourOrders"
             android:exported="false" />
         <activity
-            android:name=".FoodPage"
+            android:name=".uiPages.FoodPage"
             android:exported="false" />
         <activity
-            android:name=".Details_Page"
+            android:name=".uiPages.Details_Page"
             android:exported="false" />
         <activity
             android:name=".DetailsPage"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".uiPages.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Tap2Eat">
             <intent-filter>

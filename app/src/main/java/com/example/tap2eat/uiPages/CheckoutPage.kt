@@ -1,4 +1,4 @@
-package com.example.tap2eat
+package com.example.tap2eat.uiPages
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -9,13 +9,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ScrollView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +21,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.tap2eat.API.ApiUtilites
-import com.example.tap2eat.Utils.PUBLISHIBLE_KEY
+import com.example.tap2eat.CartFragment
+import com.example.tap2eat.models.CartItems
+import com.example.tap2eat.uiPages.FoodPage
+import com.example.tap2eat.uiPages.Profile
+import com.example.tap2eat.R
+import com.example.tap2eat.models.UserDetails
+import com.example.tap2eat.utils.Utils
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
@@ -42,7 +44,7 @@ class CheckoutPage : AppCompatActivity() {
     private lateinit var customerId: String
     private lateinit var ephemeralKey: String
     private lateinit var clientSecret: String
-    lateinit var person:UserDetails
+    lateinit var person: UserDetails
     lateinit var cartItems: ArrayList<CartItems>
 
     var amount: Int = 0
@@ -86,7 +88,7 @@ class CheckoutPage : AppCompatActivity() {
         val notificationManager= NotificationManagerCompat.from(this)
         notificationManager.notify(0,notification)
 
-        PaymentConfiguration.init(this, PUBLISHIBLE_KEY)
+        PaymentConfiguration.Companion.init(this, Utils.PUBLISHIBLE_KEY)
         paymentSheet = PaymentSheet(this, ::onPaymentSheetResult)
 
         val button = findViewById<MaterialButton>(R.id.contPayment)
@@ -120,7 +122,7 @@ class CheckoutPage : AppCompatActivity() {
 
 
 
-        val panel=Profile().apply { arguments= Bundle().apply {
+        val panel= Profile().apply { arguments= Bundle().apply {
                     putSerializable("EXTRA_USER_DETAILS", person)
             }
         }

@@ -15,6 +15,10 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tap2eat.adapter.CartAdapter
 import com.example.tap2eat.databinding.FragmentCartBinding
+import com.example.tap2eat.models.CartItems
+import com.example.tap2eat.models.UserDetails
+import com.example.tap2eat.uiPages.CheckoutPage
+import com.example.tap2eat.uiPages.FoodPage
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import java.util.Locale

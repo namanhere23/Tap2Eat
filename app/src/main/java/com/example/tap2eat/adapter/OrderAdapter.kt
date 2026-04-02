@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tap2eat.databinding.ItemOrderBinding
+import com.example.tap2eat.models.Orders
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -1,5 +1,6 @@
-package com.example.tap2eat
+package com.example.tap2eat.uiPages
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -8,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
+import android.util.Patterns
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,11 +19,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import java.io.File
-import android.util.Patterns
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.bumptech.glide.Glide
 import com.example.tap2eat.API.ApiUploadUtilities
+import com.example.tap2eat.uiPages.FoodPage
+import com.example.tap2eat.uiPages.History
+import com.example.tap2eat.uiPages.MainActivity
+import com.example.tap2eat.R
+import com.example.tap2eat.models.UserDetails
 import com.example.tap2eat.models.MediaModel
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseApp
@@ -34,6 +38,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 class Details_Page : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
@@ -53,6 +58,13 @@ class Details_Page : AppCompatActivity() {
         val etemail=findViewById<EditText>(R.id.etemail)
         val person = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
         val etName=findViewById<EditText>(R.id.etName)
+
+        etemail.isFocusable = false
+        etemail.isFocusableInTouchMode = false
+        etemail.isClickable = true
+        etemail.setOnClickListener {
+            finish()
+        }
 
         profileImage=findViewById<ImageView>(R.id.profileImage)
 
@@ -89,7 +101,7 @@ class Details_Page : AppCompatActivity() {
 
         val history=findViewById<MaterialButton>(R.id.history)
         history.setOnClickListener() {
-            Intent(this,History::class.java).also {
+            Intent(this, History::class.java).also {
                 it.putExtra("EXTRA_USER_DETAILS", person)
                 startActivity(it)
             }
@@ -102,7 +114,7 @@ class Details_Page : AppCompatActivity() {
             etMobileDetails.setText(person!!.mobile)
         }
 
-        val btn=findViewById<com.google.android.material.button.MaterialButton>(R.id.cont2)
+        val btn=findViewById<MaterialButton>(R.id.cont2)
 
         etemail.setOnClickListener()
         {
@@ -135,7 +147,12 @@ class Details_Page : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val userDetails= UserDetails(etName.text.toString(),etemail.text.toString(), etMobileDetails.text.toString(),profileImageUrl)
+            val userDetails= UserDetails(
+                etName.text.toString(),
+                etemail.text.toString(),
+                etMobileDetails.text.toString(),
+                profileImageUrl
+            )
             saveUser(userDetails) { success ->
                     if (success) {
                         Toast.makeText(this, "User saved!", Toast.LENGTH_SHORT).show()
@@ -171,7 +188,7 @@ class Details_Page : AppCompatActivity() {
             Log.d("Hello","Hello")
         }
 
-        val logout=findViewById<com.google.android.material.button.MaterialButton>(R.id.logout)
+        val logout=findViewById<MaterialButton>(R.id.logout)
         logout.setOnClickListener()
         {
             if (FirebaseApp.getApps(this).isEmpty()) {
@@ -191,24 +208,24 @@ class Details_Page : AppCompatActivity() {
 
     private fun hasExternalStorage() =
         ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+            Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED
 
     private fun requestExternalStoragePermission() {
         if (!hasExternalStorage()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
+            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),0)
         }
     }
 
 
     private fun hasLocationPermission() =
         ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+            Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
     private fun requestLocationPermission() {
         if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
+            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
     }
 
@@ -247,12 +264,13 @@ class Details_Page : AppCompatActivity() {
             Log.d("Hello4",response.body().toString())
 
             withContext(Dispatchers.Main) {
-            if(response.isSuccessful){
-                onResult(response.body())
-            } else {
-                println("Error in Uploading")
-                onResult(null)
-            }}
+                if (response.isSuccessful) {
+                    onResult(response.body())
+                } else {
+                    println("Error in Uploading")
+                    onResult(null)
+                }
+            }
         }
     }
 
@@ -277,7 +295,7 @@ class Details_Page : AppCompatActivity() {
     }
 
 
-    private fun saveUser(user: UserDetails , onResult: (Boolean) -> Unit) {
+    private fun saveUser(user: UserDetails, onResult: (Boolean) -> Unit) {
         if (FirebaseApp.getApps(this).isEmpty()) {
             FirebaseApp.initializeApp(this)
         }

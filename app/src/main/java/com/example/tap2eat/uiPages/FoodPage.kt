@@ -1,5 +1,4 @@
-package com.example.tap2eat
-
+package com.example.tap2eat.uiPages
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -12,12 +11,20 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.Glide
+import com.example.tap2eat.CartFragment
+import com.example.tap2eat.models.CartItems
+import com.example.tap2eat.uiPages.History
+import com.example.tap2eat.uiPages.MainActivity
+import com.example.tap2eat.models.OfferDetails
+import com.example.tap2eat.Offers
+import com.example.tap2eat.uiPages.Profile
+import com.example.tap2eat.R
+import com.example.tap2eat.models.UserDetails
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.appbar.MaterialToolbar
@@ -25,7 +32,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-
 
 class FoodPage : AppCompatActivity() {
     var cartItems = arrayListOf<CartItems>()
@@ -56,13 +62,13 @@ class FoodPage : AppCompatActivity() {
         navigationView?.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    Intent(this,FoodPage::class.java).also {
+                    Intent(this, FoodPage::class.java).also {
                         it.putExtra("EXTRA_USER_DETAILS", person)
                         startActivity(it)
                     }
                 }
                 R.id.nav_orders -> {
-                    Intent(this,History::class.java).also {
+                    Intent(this, History::class.java).also {
                         it.putExtra("EXTRA_USER_DETAILS", person)
                         startActivity(it)
                     }

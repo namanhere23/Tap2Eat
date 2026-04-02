@@ -1,12 +1,13 @@
-package com.example.tap2eat
+package com.example.tap2eat.uiPages
 
-import android.content.ContentValues.TAG
+import android.Manifest
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.os.Handler
 import android.util.Patterns
 import android.view.View
 import android.widget.EditText
@@ -20,25 +21,25 @@ import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
-import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.functions.FirebaseFunctions
+import com.example.tap2eat.R
+import com.example.tap2eat.models.UserDetails
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -182,13 +183,13 @@ class MainActivity : AppCompatActivity() {
                 .addCredentialOption(googleIdOption)
                 .build()
 
-            val credentialManager = CredentialManager.create(this)
+            val credentialManager = CredentialManager.Companion.create(this)
             lifecycleScope.launch {
                 try {
                     val credential = credentialManager.getCredential(this@MainActivity, request)
                     handleSignIn(credential)
                 } catch (e: GetCredentialException) {
-                    Log.e(TAG, "Google sign-in failed", e)
+                    Log.e(ContentValues.TAG, "Google sign-in failed", e)
                     when {
                         e.message?.contains("no credentials available") == true -> {
                             Toast.makeText(
@@ -288,11 +289,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleSignIn(response: GetCredentialResponse) {
         val credential = response.credential
-        if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+            val googleIdTokenCredential = GoogleIdTokenCredential.Companion.createFrom(credential.data)
             firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
         } else {
-            Log.w(TAG, "Credential is not of type Google ID!")
+            Log.w(ContentValues.TAG, "Credential is not of type Google ID!")
         }
     }
 
@@ -302,7 +303,7 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "signInWithCredential:success")
+                    Log.d(ContentValues.TAG, "signInWithCredential:success")
                     val user = auth.currentUser
                     val name = user?.displayName
                     val email = user?.email
@@ -322,7 +323,7 @@ class MainActivity : AppCompatActivity() {
                                 finalphoto = (userr.photo ?: photoUrl).toString()
                             }
 
-                            val profile=UserDetails(finalname, finalEmail, finalMobile, finalphoto)
+                            val profile= UserDetails(finalname, finalEmail, finalMobile, finalphoto)
 
                             saveUser(profile) { success ->
                                 var emaill= user?.email
@@ -330,13 +331,23 @@ class MainActivity : AppCompatActivity() {
                                     loadUserByEmail(emaill) { user ->
                                         if (user != null) {
                                             if (finalMobile?.length !=10) {
-                                                val userDetails = UserDetails( name ?: "",  email ?: "", phone ?: "",photoUrl ?: "" )
+                                                val userDetails = UserDetails(
+                                                    name ?: "",
+                                                    email ?: "",
+                                                    phone ?: "",
+                                                    photoUrl ?: ""
+                                                )
                                                 Intent(this, Details_Page::class.java).apply {
                                                     putExtra("EXTRA_USER_DETAILS", userDetails)
                                                     startActivity(this)
                                                 }
                                             } else {
-                                                val userDetails = UserDetails( name ?: "",  email ?: "", phone ?: "",photoUrl ?: "" )
+                                                val userDetails = UserDetails(
+                                                    name ?: "",
+                                                    email ?: "",
+                                                    phone ?: "",
+                                                    photoUrl ?: ""
+                                                )
                                                 Intent(this, FoodPage::class.java).apply {
                                                     putExtra("EXTRA_USER_DETAILS", userDetails)
                                                     startActivity(this)
@@ -346,7 +357,12 @@ class MainActivity : AppCompatActivity() {
 
                                         else
                                         {
-                                            val userDetails = UserDetails( name ?: "",  email ?: "", phone ?: "",photoUrl ?: "" )
+                                            val userDetails = UserDetails(
+                                                name ?: "",
+                                                email ?: "",
+                                                phone ?: "",
+                                                photoUrl ?: ""
+                                            )
                                             Intent(this, Details_Page::class.java).apply {
                                                 putExtra("EXTRA_USER_DETAILS", userDetails)
                                                 startActivity(this)
@@ -366,7 +382,7 @@ class MainActivity : AppCompatActivity() {
 
 
                 } else {
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)
                     Toast.makeText(
                         this,
                         "Firebase authentication failed: ${task.exception?.message}",
@@ -394,16 +410,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun hasLocationPermission() =
         ActivityCompat.checkSelfPermission(this,
-            android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+            Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
     private fun requestLocationPermission() {
         if (!hasLocationPermission()) {
-            ActivityCompat.requestPermissions(this,arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),0)
+            ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),0)
         }
     }
 
-    private fun saveUser(user: UserDetails , onResult: (Boolean) -> Unit) {
+    private fun saveUser(user: UserDetails, onResult: (Boolean) -> Unit) {
         if (FirebaseApp.getApps(this).isEmpty()) {
             FirebaseApp.initializeApp(this)
         }

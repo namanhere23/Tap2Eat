@@ -1,4 +1,4 @@
-package com.example.tap2eat
+package com.example.tap2eat.uiPages
 
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +9,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tap2eat.models.CartItems
+import com.example.tap2eat.OrderAdapter
+import com.example.tap2eat.models.Orders
+import com.example.tap2eat.uiPages.Profile
+import com.example.tap2eat.R
+import com.example.tap2eat.models.UserDetails
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 
@@ -28,7 +34,7 @@ class History : AppCompatActivity() {
 
         val person = intent.getSerializableExtra("EXTRA_USER_DETAILS") as? UserDetails
 
-        val panel=Profile().apply { arguments= Bundle().apply {
+        val panel= Profile().apply { arguments= Bundle().apply {
             putSerializable("EXTRA_USER_DETAILS", person)
         }
         }

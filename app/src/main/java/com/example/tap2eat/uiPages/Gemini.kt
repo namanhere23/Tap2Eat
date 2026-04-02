@@ -1,7 +1,6 @@
-package com.example.tap2eat
+package com.example.tap2eat.uiPages
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -18,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tap2eat.ChatViewModel
+import com.example.tap2eat.models.MessageModel
+import com.example.tap2eat.models.UserDetails
 
 class Gemini : ComponentActivity() {
     private val chatViewModel by viewModels<ChatViewModel>()

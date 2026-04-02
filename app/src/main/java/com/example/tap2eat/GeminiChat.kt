@@ -12,11 +12,11 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
-import com.example.tap2eat.MessageModel
+import com.example.tap2eat.models.MessageModel
 import com.example.tap2eat.BuildConfig
-import com.example.tap2eat.CartItems
-import com.example.tap2eat.Orders
-import com.example.tap2eat.UserDetails
+import com.example.tap2eat.models.CartItems
+import com.example.tap2eat.models.Orders
+import com.example.tap2eat.models.UserDetails
 import com.google.ai.client.generativeai.type.Content
 import android.widget.Toast
 import androidx.annotation.RequiresApi

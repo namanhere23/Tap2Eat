@@ -15,7 +15,7 @@
         android:textColor="@color/black"
         android:scrollbars="vertical"
         android:gravity="center"
-        tools:context=".MainActivity">
+        tools:context=".uiPages.MainActivity">
 
         <TextClock
             android:id="@+id/c"
