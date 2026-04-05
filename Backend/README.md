@@ -23,14 +23,12 @@ Create a `.env` file **in the repository root** (the parent of `Cloudinary_Backe
 
 ```env
 CORS_ORIGIN=<your-client-url>
-CLOUDNINARY_CLOUD_NAME=<your-cloudinary-name>
-CLOUDNINARY_API_KEY=<your-cloudinary-key>
-CLOUDNINARY_API_SECRET=<your-cloudinary-secret>
+CLOUDINARY_CLOUD_NAME=<your-cloudinary-name>
+CLOUDINARY_API_KEY=<your-cloudinary-key>
+CLOUDINARY_API_SECRET=<your-cloudinary-secret>
 PORT=8000
 ```
 *(Replace the placeholders with your actual Cloudinary credentials).*
-
-> **Note:** The env var names use `CLOUDNINARY` (not `CLOUDINARY`) — this matches the codebase. Use these exact names.
 
 ### 4. Run the Backend Server
 Once the variables are configured, start the server:
@@ -74,9 +72,9 @@ Because this backend is located inside a sub-folder (`Cloudinary_Backend`), you 
 ### Step 2: Set Environment Variables
 Add your secrets securely to your provider's dashboard using the variables defined in step 3 above:
 - `CORS_ORIGIN=*` 
-- `CLOUDNINARY_CLOUD_NAME`
-- `CLOUDNINARY_API_KEY`
-- `CLOUDNINARY_API_SECRET`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 - `PORT`
 
 ### Step 3: Deploy
